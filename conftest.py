@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
+from api_helpers import generate_user_data, register_user_via_api, delete_user_via_api
+
 
 @pytest.fixture(params=['chrome', 'firefox'])
 def driver(request):
@@ -22,3 +24,14 @@ def driver(request):
     yield driver
 
     driver.quit()
+
+
+@pytest.fixture
+def test_user():
+    user_data = generate_user_data()
+    access_token = register_user_via_api(user_data)
+
+    yield user_data
+
+    if access_token:
+        delete_user_via_api(access_token)

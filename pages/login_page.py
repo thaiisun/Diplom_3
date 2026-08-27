@@ -1,6 +1,5 @@
 import allure
 
-from data import UserData
 from locators.login_page_locators import LoginPageLocators
 from locators.main_page_locators import MainPageLocators
 from pages.base_page import BasePage
@@ -30,7 +29,7 @@ class LoginPage(BasePage):
         self.wait_for_element(MainPageLocators.PLACE_ORDER_BUTTON)
 
     @allure.step('Войти в аккаунт')
-    def login(self, email=UserData.EMAIL, password=UserData.PASSWORD):
+    def login(self, email, password):
         self.open_login_page()
         self.fill_email(email)
         self.fill_password(password)

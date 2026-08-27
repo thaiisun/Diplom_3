@@ -1,7 +1,5 @@
 import allure
 
-from data import Texts
-from pages.login_page import LoginPage
 from pages.main_page import MainPage
 from pages.order_feed_page import OrderFeedPage
 
