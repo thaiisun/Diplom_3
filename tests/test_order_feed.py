@@ -27,8 +27,7 @@ class TestOrderFeed:
         order_feed_page.open_order_feed_page()
         counter_after = order_feed_page.wait_total_counter_changed(counter_before)
 
-        with allure.step('Проверяем, что счётчик увеличился'):
-            assert int(counter_after) > int(counter_before)
+        assert int(counter_after) > int(counter_before), 'Счётчик за всё время не увеличился'
 
     @allure.title('Счётчик «Выполнено за сегодня» увеличивается после заказа')
     def test_today_counter_increases_after_order(self, driver, test_user):
@@ -48,8 +47,7 @@ class TestOrderFeed:
         order_feed_page.open_order_feed_page()
         counter_after = order_feed_page.wait_today_counter_changed(counter_before)
 
-        with allure.step('Проверяем, что счётчик увеличился'):
-            assert int(counter_after) > int(counter_before)
+        assert int(counter_after) > int(counter_before), 'Счётчик за сегодня не увеличился'
 
     @allure.title('Номер оформленного заказа появляется в разделе «В работе»')
     def test_new_order_appears_in_progress(self, driver, test_user):
@@ -65,5 +63,5 @@ class TestOrderFeed:
 
         order_feed_page.open_order_feed_page()
 
-        with allure.step('Проверяем, что номер заказа появился в разделе «В работе»'):
-            assert order_feed_page.wait_order_in_progress(order_number)
+        assert order_feed_page.wait_order_in_progress(order_number), \
+            'Номер заказа не появился в разделе «В работе»'

@@ -1,5 +1,4 @@
 import allure
-from selenium.webdriver import ActionChains
 
 from locators.main_page_locators import MainPageLocators
 from pages.base_page import BasePage
@@ -68,13 +67,15 @@ class MainPage(BasePage):
 
     @allure.step('Получить значение счётчика первого ингредиента')
     def get_first_ingredient_counter(self):
-        return self.driver.find_element(*MainPageLocators.FIRST_INGREDIENT_COUNTER).text
+        return self.get_element_text(MainPageLocators.FIRST_INGREDIENT_COUNTER)
 
     @allure.step('Перетащить первый ингредиент в конструктор')
     def drag_first_ingredient_to_basket(self):
-        ingredient = self.wait_for_element(MainPageLocators.FIRST_INGREDIENT)
-        basket = self.wait_for_element(MainPageLocators.CONSTRUCTOR_BASKET)
-        self.driver.execute_script(DRAG_AND_DROP_SCRIPT, ingredient, basket)
+        self.drag_and_drop(
+            MainPageLocators.FIRST_INGREDIENT,
+            MainPageLocators.CONSTRUCTOR_BASKET,
+            DRAG_AND_DROP_SCRIPT
+        )
 
     @allure.step('Дождаться увеличения счётчика первого ингредиента')
     def wait_counter_changed(self, old_value):
@@ -89,4 +90,5 @@ class MainPage(BasePage):
     @allure.step('Получить номер оформленного заказа')
     def get_order_number(self):
         self.wait_for_element(MainPageLocators.ORDER_MODAL_TEXT)
-        return self.wait_for_text_change(MainPageLocators.ORDER_NUMBER, '9999')
+        number = self.wait_for_text_change(MainPageLocators.ORDER_NUMBER, '9999')
+        return str(int(number.strip().lstrip('#')))

@@ -16,8 +16,7 @@ class TestMainPage:
         main_page.click_order_feed()
         main_page.click_constructor()
 
-        with allure.step('Проверяем, что открылся конструктор'):
-            assert main_page.is_constructor_displayed()
+        assert main_page.is_constructor_displayed(), 'Конструктор не открылся'
 
     @allure.title('Переход по клику на «Лента Заказов»')
     def test_click_order_feed_opens_feed(self, driver):
@@ -27,8 +26,7 @@ class TestMainPage:
 
         main_page.click_order_feed()
 
-        with allure.step('Проверяем, что открылась лента заказов'):
-            assert order_feed_page.is_order_feed_displayed()
+        assert order_feed_page.is_order_feed_displayed(), 'Лента заказов не открылась'
 
     @allure.title('Клик по ингредиенту открывает окно с деталями')
     def test_click_ingredient_opens_modal(self, driver):
@@ -37,8 +35,7 @@ class TestMainPage:
 
         main_page.click_first_ingredient()
 
-        with allure.step('Проверяем, что появилось окно с деталями'):
-            assert main_page.is_ingredient_modal_displayed()
+        assert main_page.is_ingredient_modal_displayed(), 'Окно с деталями не появилось'
 
     @allure.title('Окно с деталями ингредиента закрывается по клику на крестик')
     def test_close_ingredient_modal_by_cross(self, driver):
@@ -47,10 +44,9 @@ class TestMainPage:
 
         main_page.click_first_ingredient()
         main_page.close_ingredient_modal()
+        main_page.wait_ingredient_modal_closed()
 
-        with allure.step('Проверяем, что окно закрылось'):
-            main_page.wait_ingredient_modal_closed()
-            assert not main_page.is_ingredient_modal_displayed()
+        assert not main_page.is_ingredient_modal_displayed(), 'Окно с деталями не закрылось'
 
     @allure.title('При добавлении ингредиента счётчик увеличивается')
     def test_add_ingredient_increases_counter(self, driver):
@@ -61,5 +57,4 @@ class TestMainPage:
         main_page.drag_first_ingredient_to_basket()
         counter_after = main_page.wait_counter_changed(counter_before)
 
-        with allure.step('Проверяем, что счётчик увеличился'):
-            assert int(counter_after) > int(counter_before or 0)
+        assert int(counter_after) > int(counter_before or 0), 'Счётчик ингредиента не увеличился'

@@ -1,6 +1,4 @@
 import allure
-from selenium.common.exceptions import StaleElementReferenceException
-from selenium.webdriver.support.wait import WebDriverWait
 
 from locators.order_feed_locators import OrderFeedLocators
 from pages.base_page import BasePage
@@ -35,20 +33,16 @@ class OrderFeedPage(BasePage):
 
     @allure.step('Получить список номеров заказов из раздела «В работе»')
     def get_in_progress_order_numbers(self):
-        try:
-            elements = self.driver.find_elements(*OrderFeedLocators.IN_PROGRESS_ORDERS)
-            numbers = []
-            for element in elements:
-                text = element.text.strip().lstrip('#')
-                if text.isdigit():
-                    numbers.append(str(int(text)))
-            return numbers
-        except StaleElementReferenceException:
-            return []
+        texts = self.get_elements_texts(OrderFeedLocators.IN_PROGRESS_ORDERS)
+        numbers = []
+        for text in texts:
+            cleaned = text.strip().lstrip('#')
+            if cleaned.isdigit():
+                numbers.append(str(int(cleaned)))
+        return numbers
 
     @allure.step('Дождаться появления номера заказа в разделе «В работе»')
     def wait_order_in_progress(self, order_number):
-        WebDriverWait(self.driver, self.TIMEOUT).until(
-            lambda driver: order_number in self.get_in_progress_order_numbers()
+        return self.wait_for_condition(
+            lambda: order_number in self.get_in_progress_order_numbers()
         )
-        return True

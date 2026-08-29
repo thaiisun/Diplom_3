@@ -1,4 +1,5 @@
 import allure
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -29,6 +30,11 @@ class BasePage:
     def click_element(self, locator):
         self.wait_for_clickable(locator).click()
 
+    @allure.step('Кликнуть по элементу через JavaScript')
+    def click_element_js(self, locator):
+        element = self.wait_for_element(locator)
+        self.driver.execute_script('arguments[0].click();', element)
+
     @allure.step('Ввести текст в поле')
     def fill_field(self, locator, text):
         self.wait_for_element(locator).send_keys(text)
@@ -36,6 +42,13 @@ class BasePage:
     @allure.step('Получить текст элемента')
     def get_element_text(self, locator):
         return self.wait_for_element(locator).text
+
+    @allure.step('Получить тексты всех найденных элементов')
+    def get_elements_texts(self, locator):
+        try:
+            return [element.text for element in self.driver.find_elements(*locator)]
+        except StaleElementReferenceException:
+            return []
 
     @allure.step('Проверить, что элемент отображается')
     def is_element_displayed(self, locator):
@@ -58,22 +71,19 @@ class BasePage:
         )
         return self.get_element_text(locator)
 
+    @allure.step('Дождаться выполнения условия')
+    def wait_for_condition(self, condition):
+        WebDriverWait(self.driver, self.TIMEOUT).until(lambda driver: condition())
+        return True
+
+    @allure.step('Перетащить элемент в целевую область')
+    def drag_and_drop(self, source_locator, target_locator, script):
+        source = self.wait_for_element(source_locator)
+        target = self.wait_for_element(target_locator)
+        self.driver.execute_script(script, source, target)
+
     @allure.step('Прокрутить к элементу')
     def scroll_to_element(self, locator):
-        element = self.driver.find_element(*locator)
+        element = self.wait_for_element(locator)
         self.driver.execute_script('arguments[0].scrollIntoView(true);', element)
         return element
-
-
-    @allure.step('Кликнуть по элементу через JavaScript')
-    def click_element_js(self, locator):
-        element = self.wait_for_element(locator)
-        self.driver.execute_script('arguments[0].click();', element)
-
-    @allure.step('Дождаться появления элемента в DOM')
-    def wait_for_presence(self, locator):
-        return WebDriverWait(self.driver, self.TIMEOUT).until(
-            EC.presence_of_element_located(locator)
-        )
-
-
